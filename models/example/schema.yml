@@ -1,21 +1,27 @@
-
 version: 2
 
-models:
-    - name: my_first_dbt_model
-      description: "A starter dbt model"
-      columns:
-          - name: id
-            description: "The primary key for this table"
-            tests:
-                - unique
-                - not_null
+sources:
+  - name: tpch
+    database: SNOWFLAKE_SAMPLE_DATA
+    schema: TPCH_SF1
+    tables:
+      - name: customer
+      - name: orders
+      - name: lineitem
 
-    - name: my_second_dbt_model
-      description: "A starter dbt model"
-      columns:
-          - name: id
-            description: "The primary key for this table"
-            tests:
-                - unique
-                - not_null
+
+models:
+  - name: stg_orders
+    columns:
+      - name: o_orderkey
+        tests:
+          - not_null
+          - unique
+
+          
+  - name: customer_revenue
+    columns:
+      - name: o_custkey
+        tests:
+          - not_null
+          - unique
