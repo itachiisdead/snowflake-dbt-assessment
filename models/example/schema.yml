@@ -4,24 +4,64 @@ sources:
   - name: tpch
     database: SNOWFLAKE_SAMPLE_DATA
     schema: TPCH_SF1
+    description: "the raw TPC-H dataset from Snowflake sample data."
     tables:
       - name: customer
+        description: "Customers table with customer demographics."
+        columns:
+          - name: c_custkey
+            description: "Primary key."
+            tests:
+              - not_null
+              - unique
       - name: orders
+        description: "Orders the customers make."
+        columns:
+          - name: o_orderkey
+            description: "Primary key."
+            tests:
+              - not_null
+              - unique
+          - name: o_custkey
+            description: "Foreign key for customer table."
+            tests:
+              - not_null
+              - relationships:
+                  to: source('tpch', 'customer')
+                  field: c_custkey
       - name: lineitem
-
+        description: "Line items for each order."
+        columns:
+          - name: l_orderkey
+            description: "Foreign key for orders table."
+            tests:
+              - not_null
+              - relationships:
+                  to: source('tpch', 'orders')
+                  field: o_orderkey
 
 models:
   - name: stg_orders
+    description: "silver layer: joins orders with customers, adds order_year and total_price."
     columns:
       - name: o_orderkey
+        description: "Unique identifier for the orders."
         tests:
           - not_null
           - unique
+      - name: customer_name
+        description: "customer placing the order."
+      - name: order_year
+        description: "Year from the order date."
 
-          
   - name: customer_revenue
+    description: "gold layer: aggregates total revenue per customer."
     columns:
       - name: o_custkey
+        description: "Customer key."
         tests:
           - not_null
           - unique
+      - name: total_revenue
+        description: "Sum of lineitem extended price * (1 - discount)."
+
