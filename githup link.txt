@@ -1,0 +1,1 @@
+https://github.com/itachiisdead/snowflake-dbt-assessment.git
